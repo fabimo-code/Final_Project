@@ -231,58 +231,57 @@ with tab2:
     """)
 
 with tab3:
-    dias_orden = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
-    ]
-
-    dias_es = {
-        "Monday": "Lunes",
-        "Tuesday": "Martes",
-        "Wednesday": "Miércoles",
-        "Thursday": "Jueves",
-        "Friday": "Viernes",
-        "Saturday": "Sábado",
-        "Sunday": "Domingo"
+    dias_nombre = {
+        0: "Lunes",
+        1: "Martes",
+        2: "Miércoles",
+        3: "Jueves",
+        4: "Viernes",
+        5: "Sábado",
+        6: "Domingo"
     }
 
     heatmap_data = (
         df_filtrado
-        .groupby(["DIA_SEMANA", "HORA"])
+        .dropna(subset=["DIA_SEMANA_NUM", "HORA"])
+        .groupby(["DIA_SEMANA_NUM", "HORA"])
         .size()
         .reset_index(name="Accidentes")
     )
 
-    heatmap_pivot = heatmap_data.pivot(
-        index="DIA_SEMANA",
-        columns="HORA",
-        values="Accidentes"
-    ).fillna(0)
+    if heatmap_data.empty:
+        st.warning("No hay datos suficientes para construir el mapa de calor con los filtros seleccionados.")
+    else:
+        heatmap_pivot = heatmap_data.pivot_table(
+            index="DIA_SEMANA_NUM",
+            columns="HORA",
+            values="Accidentes",
+            aggfunc="sum",
+            fill_value=0
+        )
 
-    heatmap_pivot = heatmap_pivot.reindex(dias_orden)
-    heatmap_pivot.index = [dias_es.get(dia, dia) for dia in heatmap_pivot.index]
+        heatmap_pivot = heatmap_pivot.reindex(index=range(0, 7), columns=range(0, 24), fill_value=0)
+        heatmap_pivot.index = [dias_nombre[dia] for dia in heatmap_pivot.index]
 
-    fig_heatmap = px.imshow(
-        heatmap_pivot,
-        aspect="auto",
-        title="Mapa de calor: accidentes por día de la semana y hora",
-        labels=dict(x="Hora del día", y="Día de la semana", color="Accidentes")
-    )
+        fig_heatmap = px.imshow(
+            heatmap_pivot,
+            aspect="auto",
+            title="Mapa de calor: accidentes por día de la semana y hora",
+            labels=dict(x="Hora del día", y="Día de la semana", color="Accidentes"),
+            text_auto=True
+        )
 
-    fig_heatmap.update_layout(
-        xaxis=dict(dtick=1)
-    )
+        fig_heatmap.update_layout(
+            xaxis=dict(dtick=1),
+            yaxis_title="Día de la semana",
+            xaxis_title="Hora del día"
+        )
 
-    st.plotly_chart(fig_heatmap, use_container_width=True)
+        st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    st.caption(
-        "El mapa de calor permite identificar franjas críticas combinando día de la semana y hora del accidente."
-    )
+        st.caption(
+            "El mapa de calor permite identificar franjas críticas combinando día de la semana y hora del accidente."
+        )
 
 st.divider()
 

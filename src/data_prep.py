@@ -93,8 +93,19 @@ def cargar_datos(ruta_csv: str | Path = DATA_PATH) -> pd.DataFrame:
     df["MES"] = df["FECHA_HORA_ACC"].dt.month
     df["MES_NOMBRE"] = df["MES"].map(MESES)
     df["HORA"] = df["FECHA_HORA_ACC"].dt.hour
-    df["DIA_SEMANA_NUM"] = df["FECHA_HORA_ACC"].dt.dayofweek
-    df["DIA_SEMANA"] = df["DIA_SEMANA_NUM"].map(DIAS_SEMANA)
+    df["DIA_SEMANA_NUM"] = df["FECHA_HORA_ACC"].dt.weekday
+    
+    dias_semana = {
+        0: "Lunes",
+        1: "Martes",
+        2: "Miércoles",
+        3: "Jueves",
+        4: "Viernes",
+        5: "Sábado",
+        6: "Domingo"
+    }
+    
+    df["DIA_SEMANA"] = df["DIA_SEMANA_NUM"].map(dias_semana)
 
     # Variable binaria de severidad.
     df["RIESGO_ALTO"] = df["GRAVEDAD"].isin(["CON HERIDOS", "CON MUERTOS"]).astype(int)
