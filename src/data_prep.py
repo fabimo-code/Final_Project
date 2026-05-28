@@ -111,29 +111,55 @@ def cargar_datos(ruta_csv: str | Path = DATA_PATH) -> pd.DataFrame:
 
 
 def aplicar_filtros(
-    df: pd.DataFrame,
-    rango_anios: tuple[int, int] | None = None,
-    localidades: list[str] | None = None,
-    gravedades: list[str] | None = None,
-    clases_accidente: list[str] | None = None,
-) -> pd.DataFrame:
-    """Filtra el dataframe según los controles seleccionados por el usuario."""
+    df,
+    rango_anios=None,
+    localidades=None,
+    gravedades=None,
+    clases=None,
+    meses=None
+):
+    """
+    Aplica filtros generales al DataFrame de siniestros viales.
+
+    Parámetros:
+    - df: DataFrame base.
+    - rango_anios: tupla con año mínimo y máximo.
+    - localidades: lista de localidades seleccionadas.
+    - gravedades: lista de gravedades seleccionadas.
+    - clases: lista de clases de accidente seleccionadas.
+    - meses: lista de meses seleccionados.
+
+    Retorna:
+    - DataFrame filtrado.
+    """
+
     df_filtrado = df.copy()
 
     if rango_anios is not None:
-        anio_min, anio_max = rango_anios
         df_filtrado = df_filtrado[
-            (df_filtrado["ANIO"] >= anio_min) & (df_filtrado["ANIO"] <= anio_max)
+            (df_filtrado["ANIO"] >= rango_anios[0]) &
+            (df_filtrado["ANIO"] <= rango_anios[1])
         ]
 
-    if localidades:
-        df_filtrado = df_filtrado[df_filtrado["LOCALIDAD"].isin(localidades)]
+    if localidades is not None and len(localidades) > 0:
+        df_filtrado = df_filtrado[
+            df_filtrado["LOCALIDAD"].isin(localidades)
+        ]
 
-    if gravedades:
-        df_filtrado = df_filtrado[df_filtrado["GRAVEDAD"].isin(gravedades)]
+    if gravedades is not None and len(gravedades) > 0:
+        df_filtrado = df_filtrado[
+            df_filtrado["GRAVEDAD"].isin(gravedades)
+        ]
 
-    if clases_accidente:
-        df_filtrado = df_filtrado[df_filtrado["CLASE_ACC"].isin(clases_accidente)]
+    if clases is not None and len(clases) > 0:
+        df_filtrado = df_filtrado[
+            df_filtrado["CLASE_ACC"].isin(clases)
+        ]
+
+    if meses is not None and len(meses) > 0:
+        df_filtrado = df_filtrado[
+            df_filtrado["MES"].isin(meses)
+        ]
 
     return df_filtrado
 

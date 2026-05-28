@@ -1,66 +1,235 @@
 import streamlit as st
+import plotly.express as px
 
-from src.data_prep import cargar_datos, crear_sidebar_filtros
+from src.data_prep import cargar_datos, aplicar_filtros
 from src.kpis import calcular_kpis
-from src.visuals import (
-    grafico_distribucion_gravedad,
-    grafico_evolucion_anual,
-    grafico_top_localidades,
+from src.visuals import COLOR_GRAVEDAD
+
+
+st.set_page_config(
+    page_title="Vista Ejecutiva",
+    page_icon="📊",
+    layout="wide"
 )
 
-st.set_page_config(page_title="Vista Ejecutiva", page_icon="📊", layout="wide")
+# =========================
+# CARGA DE DATOS
+# =========================
+df = cargar_datos()
 
-st.title("📊 Vista Ejecutiva")
-st.markdown(
-    """
-Esta vista resume el comportamiento general de los siniestros viales en Bogotá mediante indicadores clave, filtros interactivos y visualizaciones principales.
-"""
+st.title("📊 Vista Ejecutiva de Siniestralidad Vial en Bogotá")
+
+st.markdown("""
+Esta vista resume el comportamiento general de los siniestros viales en Bogotá, 
+permitiendo identificar rápidamente la magnitud del fenómeno, la severidad de los eventos, 
+las localidades críticas y los patrones temporales más relevantes.
+""")
+
+st.info(
+    "Audiencia objetivo: Secretaría Distrital de Movilidad, analistas de movilidad urbana, entidades de seguridad vial y tomadores de decisiones del sector público."
 )
 
-try:
-    df = cargar_datos()
-except FileNotFoundError as error:
-    st.error(str(error))
-    st.stop()
+# =========================
+# SIDEBAR - FILTROS
+# =========================
+with st.sidebar:
+    st.header("🔎 Filtros de análisis")
 
-df_filtrado = crear_sidebar_filtros(df)
+    anio_min = int(df["ANIO"].min())
+    anio_max = int(df["ANIO"].max())
 
-if df_filtrado.empty:
-    st.warning("No hay datos para los filtros seleccionados. Ajusta los filtros en el menú lateral.")
-    st.stop()
+    rango_anios = st.slider(
+        "Rango de años",
+        min_value=anio_min,
+        max_value=anio_max,
+        value=(anio_min, anio_max)
+    )
+
+    localidades = st.multiselect(
+        "Localidad",
+        options=sorted(df["LOCALIDAD"].dropna().unique()),
+        default=sorted(df["LOCALIDAD"].dropna().unique())
+    )
+
+    gravedades = st.multiselect(
+        "Gravedad",
+        options=sorted(df["GRAVEDAD"].dropna().unique()),
+        default=sorted(df["GRAVEDAD"].dropna().unique())
+    )
+
+    clases = st.multiselect(
+        "Clase de accidente",
+        options=sorted(df["CLASE_ACC"].dropna().unique()),
+        default=sorted(df["CLASE_ACC"].dropna().unique())
+    )
+
+df_filtrado = aplicar_filtros(
+    df,
+    rango_anios=rango_anios,
+    localidades=localidades,
+    gravedades=gravedades,
+    clases=clases
+)
 
 kpis = calcular_kpis(df_filtrado)
 
+# =========================
+# VALIDACIÓN
+# =========================
+if df_filtrado.empty:
+    st.warning("No hay datos disponibles con los filtros seleccionados. Ajusta los filtros para continuar.")
+    st.stop()
+
+# =========================
+# KPIS PRINCIPALES
+# =========================
 st.subheader("Indicadores clave")
-col1, col2, col3, col4, col5 = st.columns(5)
 
-col1.metric("Total accidentes", f"{kpis['total_accidentes']:,}".replace(",", "."))
-col2.metric("% riesgo alto", f"{kpis['porcentaje_riesgo_alto']}%")
-col3.metric("Con heridos", f"{kpis['accidentes_heridos']:,}".replace(",", "."))
-col4.metric("Con muertos", f"{kpis['accidentes_muertos']:,}".replace(",", "."))
-col5.metric("Hora pico", f"{kpis['hora_pico']}:00" if isinstance(kpis['hora_pico'], int) else kpis['hora_pico'])
+col1, col2, col3, col4 = st.columns(4)
 
-st.caption(
-    f"Localidad crítica según los filtros actuales: **{kpis['localidad_critica']}**. Mes con mayor accidentalidad: **{kpis['mes_critico']}**."
+col1.metric(
+    label="Total de accidentes",
+    value=f"{kpis['total_accidentes']:,}".replace(",", ".")
+)
+
+col2.metric(
+    label="% riesgo alto",
+    value=f"{kpis['porcentaje_riesgo_alto']:.2f}%"
+)
+
+col3.metric(
+    label="Accidentes con heridos",
+    value=f"{kpis['accidentes_heridos']:,}".replace(",", ".")
+)
+
+col4.metric(
+    label="Accidentes con muertos",
+    value=f"{kpis['accidentes_muertos']:,}".replace(",", ".")
+)
+
+col5, col6, col7 = st.columns(3)
+
+col5.metric(
+    label="Localidad crítica",
+    value=kpis["localidad_critica"]
+)
+
+col6.metric(
+    label="Hora pico",
+    value=f"{kpis['hora_pico']}:00"
+)
+
+col7.metric(
+    label="Mes crítico",
+    value=kpis["mes_critico"]
 )
 
 st.divider()
 
-col_a, col_b = st.columns((1.2, 1))
+# =========================
+# HALLAZGO EJECUTIVO
+# =========================
+st.subheader("Lectura ejecutiva")
+
+st.markdown(f"""
+Con los filtros seleccionados, se registran **{kpis['total_accidentes']:,} accidentes**. 
+La localidad con mayor concentración es **{kpis['localidad_critica']}**, 
+la hora con mayor frecuencia es **{kpis['hora_pico']}:00** 
+y el porcentaje de accidentes clasificados como riesgo alto es **{kpis['porcentaje_riesgo_alto']:.2f}%**.
+""".replace(",", "."))
+
+st.divider()
+
+# =========================
+# VISUALIZACIONES
+# =========================
+st.subheader("Visualizaciones principales")
+
+col_a, col_b = st.columns(2)
 
 with col_a:
-    st.plotly_chart(grafico_evolucion_anual(df_filtrado), use_container_width=True)
+    acc_anio = (
+        df_filtrado
+        .groupby("ANIO")
+        .size()
+        .reset_index(name="Accidentes")
+        .sort_values("ANIO")
+    )
+
+    fig_anio = px.line(
+        acc_anio,
+        x="ANIO",
+        y="Accidentes",
+        markers=True,
+        title="Evolución anual de accidentes"
+    )
+
+    fig_anio.update_layout(
+        xaxis_title="Año",
+        yaxis_title="Número de accidentes",
+        hovermode="x unified"
+    )
+
+    st.plotly_chart(fig_anio, use_container_width=True)
 
 with col_b:
-    st.plotly_chart(grafico_distribucion_gravedad(df_filtrado), use_container_width=True)
+    gravedad = (
+        df_filtrado
+        .groupby("GRAVEDAD")
+        .size()
+        .reset_index(name="Accidentes")
+        .sort_values("Accidentes", ascending=False)
+    )
 
-st.plotly_chart(grafico_top_localidades(df_filtrado), use_container_width=True)
+    fig_gravedad = px.bar(
+        gravedad,
+        x="GRAVEDAD",
+        y="Accidentes",
+        color="GRAVEDAD",
+        color_discrete_map=COLOR_GRAVEDAD,
+        title="Distribución por gravedad"
+    )
 
-st.subheader("Lectura ejecutiva")
-st.markdown(
-    f"""
-Con los filtros seleccionados, la localidad con mayor concentración de accidentes es **{kpis['localidad_critica']}** y la hora de mayor ocurrencia es **{kpis['hora_pico']}:00**.
+    fig_gravedad.update_layout(
+        xaxis_title="Gravedad",
+        yaxis_title="Número de accidentes",
+        showlegend=False
+    )
 
-El porcentaje de accidentes clasificados como riesgo alto, es decir, eventos con heridos o muertos, corresponde al **{kpis['porcentaje_riesgo_alto']}%** del total filtrado.
-"""
+    st.plotly_chart(fig_gravedad, use_container_width=True)
+
+top_localidades = (
+    df_filtrado
+    .groupby("LOCALIDAD")
+    .size()
+    .reset_index(name="Accidentes")
+    .sort_values("Accidentes", ascending=False)
+    .head(10)
 )
+
+fig_localidades = px.bar(
+    top_localidades,
+    x="Accidentes",
+    y="LOCALIDAD",
+    orientation="h",
+    title="Top 10 localidades con mayor número de accidentes"
+)
+
+fig_localidades.update_layout(
+    xaxis_title="Número de accidentes",
+    yaxis_title="Localidad",
+    yaxis={"categoryorder": "total ascending"}
+)
+
+st.plotly_chart(fig_localidades, use_container_width=True)
+
+# =========================
+# NOTA TÉCNICA
+# =========================
+with st.expander("Ver nota técnica de la vista"):
+    st.markdown("""
+    Esta vista utiliza filtros por año, localidad, gravedad y clase de accidente. 
+    Los indicadores se calculan dinámicamente sobre los datos filtrados.
+
+    La clasificación de riesgo alto considera los accidentes con heridos o muertos.
+    """)
