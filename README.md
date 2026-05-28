@@ -1,15 +1,35 @@
 # Plataforma Visual Interactiva para el Monitoreo y Análisis de Siniestralidad Vial en Bogotá
 
-## Propósito del proyecto
+Dashboard desarrollado en Streamlit para analizar siniestros viales históricos en Bogotá.
 
-Diseñar y construir una plataforma visual interactiva en Streamlit para el monitoreo y análisis estratégico de la siniestralidad vial en Bogotá, a partir de datos históricos de accidentes de tránsito.
+## Estructura
 
-El dashboard busca facilitar la identificación de patrones temporales, geográficos y de gravedad, con el fin de apoyar procesos de prevención, priorización de intervenciones y toma de decisiones por parte de entidades de movilidad y seguridad vial.
+```text
+proyecto_siniestros_streamlit/
+├── app.py
+├── requirements.txt
+├── data/
+│   └── historico_siniestros_bogota_d.c_-.csv
+├── src/
+│   ├── data_prep.py
+│   ├── kpis.py
+│   └── visuals.py
+└── pages/
+    ├── 1_Vista_Ejecutiva.py
+    ├── 2_Analisis_Temporal.py
+    ├── 3_Analisis_Geografico.py
+    ├── 4_Gravedad_y_Riesgo.py
+    ├── 5_Modelos_Analiticos.py
+    └── 6_Conclusiones.py
+```
 
-## Audiencia objetivo
+## Ejecución local
 
-La plataforma está dirigida principalmente a la Secretaría Distrital de Movilidad, analistas de movilidad urbana, entidades de seguridad vial y tomadores de decisiones del sector público.
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
 
-## Necesidad analítica
+## Propósito
 
-Bogotá cuenta con información histórica sobre siniestros viales, pero se requiere una herramienta visual e interactiva que permita transformar estos datos en información clara, accionable y orientada a decisiones.
+Transformar datos históricos de siniestros viales en información visual, interactiva y accionable para apoyar decisiones de movilidad y seguridad vial en Bogotá.
