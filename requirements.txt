@@ -3,6 +3,4 @@ pandas
 numpy
 plotly
 matplotlib
-scikit-learn
-imbalanced-learn
 openpyxl
