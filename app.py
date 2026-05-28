@@ -28,7 +28,7 @@ st.markdown(
 
 st.subheader("Navegación")
 st.info(
-    "Usa el menú lateral para recorrer las páginas del dashboard: Vista Ejecutiva, Análisis Temporal, Análisis Geográfico, Gravedad y Riesgo, Modelos Analíticos y Conclusiones."
+    "Usa el menú lateral para recorrer las páginas del dashboard: Vista Ejecutiva, Análisis Temporal, Análisis Geográfico, Gravedad y Riesgo y Conclusiones."
 )
 
 st.markdown(
