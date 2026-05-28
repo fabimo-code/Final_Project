@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from src.data_prep import cargar_datos, aplicar_filtros
-from src.visuals import COLOR_GRAVEDAD
+from src.visuals import COLOR_GRAVEDAD, ESCALA_BARRAS, aplicar_estilo_barras
 
 
 st.set_page_config(
@@ -165,8 +165,12 @@ with tab1:
         x="Accidentes",
         y="LOCALIDAD",
         orientation="h",
+        color="Accidentes",
+        color_continuous_scale=ESCALA_BARRAS,
         title="Top 15 localidades con mayor número de accidentes"
     )
+    
+    fig_ranking = aplicar_estilo_barras(fig_ranking)
 
     fig_ranking.update_layout(
         xaxis_title="Número de accidentes",

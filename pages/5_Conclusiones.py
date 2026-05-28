@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 from src.data_prep import cargar_datos, aplicar_filtros
-from src.visuals import COLOR_GRAVEDAD
+from src.visuals import COLOR_GRAVEDAD, ESCALA_BARRAS, aplicar_estilo_barras
 
 
 st.set_page_config(
@@ -218,8 +218,12 @@ with tab1:
         x="Accidentes",
         y="LOCALIDAD",
         orientation="h",
+        color="Accidentes",
+        color_continuous_scale=ESCALA_BARRAS,
         title="Top 10 localidades prioritarias por número de accidentes"
-    )
+        )
+    
+    fig_top_localidades = aplicar_estilo_barras(fig_top_localidades)
 
     fig_top_localidades.update_layout(
         xaxis_title="Número de accidentes",

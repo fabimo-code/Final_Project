@@ -3,7 +3,7 @@ import plotly.express as px
 
 from src.data_prep import cargar_datos, aplicar_filtros
 from src.kpis import calcular_kpis
-from src.visuals import COLOR_GRAVEDAD
+from src.visuals import COLOR_GRAVEDAD, ESCALA_BARRAS, aplicar_estilo_barras
 
 
 st.set_page_config(
@@ -182,13 +182,16 @@ with col_b:
     )
 
     fig_gravedad = px.bar(
-        gravedad,
-        x="GRAVEDAD",
-        y="Accidentes",
-        color="GRAVEDAD",
-        color_discrete_map=COLOR_GRAVEDAD,
-        title="Distribución por gravedad"
+    gravedad,
+    x="GRAVEDAD",
+    y="Accidentes",
+    color="Accidentes",
+    color_continuous_scale=ESCALA_BARRAS,
+    title="Distribución por gravedad"
+    
     )
+    
+    fig_gravedad = aplicar_estilo_barras(fig_gravedad)
 
     fig_gravedad.update_layout(
         xaxis_title="Gravedad",
@@ -212,8 +215,12 @@ fig_localidades = px.bar(
     x="Accidentes",
     y="LOCALIDAD",
     orientation="h",
+    color="Accidentes",
+    color_continuous_scale=ESCALA_BARRAS,
     title="Top 10 localidades con mayor número de accidentes"
 )
+
+fig_localidades = aplicar_estilo_barras(fig_localidades)
 
 fig_localidades.update_layout(
     xaxis_title="Número de accidentes",

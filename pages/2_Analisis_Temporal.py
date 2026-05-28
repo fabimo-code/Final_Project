@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from src.data_prep import cargar_datos, aplicar_filtros
-from src.visuals import COLOR_GRAVEDAD
+from src.visuals import COLOR_GRAVEDAD, ESCALA_BARRAS, aplicar_estilo_barras
 
 
 st.set_page_config(
@@ -188,11 +188,16 @@ with tab2:
         acc_mes["MES_NOMBRE"] = acc_mes["MES"].map(meses_nombre)
 
         fig_mes = px.bar(
-            acc_mes,
-            x="MES_NOMBRE",
-            y="Accidentes",
-            title="Accidentes por mes"
+             acc_mes,
+             x="MES_NOMBRE",
+             y="Accidentes",
+             color="Accidentes",
+             color_continuous_scale=ESCALA_BARRAS,
+             title="Accidentes por mes"
+        
         )
+        
+        fig_mes = aplicar_estilo_barras(fig_mes)
 
         fig_mes.update_layout(
             xaxis_title="Mes",
@@ -214,8 +219,12 @@ with tab2:
             acc_hora,
             x="HORA",
             y="Accidentes",
+            color="Accidentes",
+            color_continuous_scale=ESCALA_BARRAS,
             title="Accidentes por hora del día"
         )
+        
+        fig_hora = aplicar_estilo_barras(fig_hora)
 
         fig_hora.update_layout(
             xaxis_title="Hora del día",

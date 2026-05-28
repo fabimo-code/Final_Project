@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from src.data_prep import cargar_datos, aplicar_filtros
-from src.visuals import COLOR_GRAVEDAD
+from src.visuals import COLOR_GRAVEDAD, ESCALA_BARRAS, aplicar_estilo_barras
 
 
 st.set_page_config(
@@ -159,10 +159,12 @@ with tab1:
             gravedad,
             x="GRAVEDAD",
             y="Accidentes",
-            color="GRAVEDAD",
-            color_discrete_map=COLOR_GRAVEDAD,
+            color="Accidentes",
+            color_continuous_scale=ESCALA_BARRAS,
             title="Accidentes por gravedad"
         )
+        
+        fig_bar_gravedad = aplicar_estilo_barras(fig_bar_gravedad)
 
         fig_bar_gravedad.update_layout(
             xaxis_title="Gravedad",
@@ -220,8 +222,12 @@ with tab2:
         x="accidentes_riesgo_alto",
         y="LOCALIDAD",
         orientation="h",
+        color="accidentes_riesgo_alto",
+        color_continuous_scale=ESCALA_BARRAS,
         title="Top 15 localidades por accidentes de riesgo alto"
     )
+    
+    fig_riesgo_localidad = aplicar_estilo_barras(fig_riesgo_localidad)
 
     fig_riesgo_localidad.update_layout(
         xaxis_title="Accidentes de riesgo alto",
@@ -235,8 +241,12 @@ with tab2:
         x="porcentaje_riesgo_alto",
         y="LOCALIDAD",
         orientation="h",
+        color="porcentaje_riesgo_alto",
+        color_continuous_scale=ESCALA_BARRAS,
         title="% de riesgo alto en localidades con mayor volumen de riesgo"
     )
+    
+    fig_porc_riesgo = aplicar_estilo_barras(fig_porc_riesgo)
 
     fig_porc_riesgo.update_layout(
         xaxis_title="% riesgo alto",
@@ -339,8 +349,12 @@ with tab4:
         riesgo_hora,
         x="HORA",
         y="porcentaje_riesgo_alto",
+        color="porcentaje_riesgo_alto",
+        color_continuous_scale=ESCALA_BARRAS,
         title="% de riesgo alto por hora"
     )
+    
+    fig_porc_hora = aplicar_estilo_barras(fig_porc_hora)
 
     fig_porc_hora.update_layout(
         xaxis_title="Hora del día",

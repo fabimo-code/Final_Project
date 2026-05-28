@@ -7,6 +7,13 @@ COLOR_GRAVEDAD = {
     "CON MUERTOS": "#DC2626",
 }
 
+ESCALA_BARRAS = [
+    "#DBEAFE",  # azul muy claro
+    "#60A5FA",  # azul medio
+    "#2563EB",  # azul fuerte
+    "#0F172A"   # azul muy oscuro
+]
+
 COLOR_PRINCIPAL = "#1E3A8A"
 
 
@@ -89,4 +96,20 @@ def grafico_accidentes_por_mes(df: pd.DataFrame):
     )
     fig.update_traces(marker_color=COLOR_PRINCIPAL)
     fig.update_layout(xaxis_title="Mes", yaxis_title="Número de accidentes")
+    return fig
+
+def aplicar_estilo_barras(fig, mostrar_escala=False):
+    """
+    Aplica estilo visual uniforme a las gráficas de barras.
+    La escala de color se oculta por defecto para mantener limpio el dashboard.
+    """
+    fig.update_layout(
+        coloraxis_showscale=mostrar_escala
+    )
+
+    fig.update_traces(
+        marker_line_width=0.7,
+        marker_line_color="rgba(30, 41, 59, 0.25)"
+    )
+
     return fig
