@@ -39,7 +39,6 @@ st.markdown(
 2. **Análisis Temporal:** evolución anual, mensual y horaria.
 3. **Análisis Geográfico:** localidades críticas y distribución espacial.
 4. **Gravedad y Riesgo:** severidad de los accidentes.
-5. **Modelos Analíticos:** componentes complementarios.
-6. **Conclusiones:** hallazgos y recomendaciones.
+5. **Conclusiones:** hallazgos y recomendaciones.
 """
 )

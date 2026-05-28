@@ -23,6 +23,12 @@ Esta vista permite identificar la concentración territorial de los siniestros v
 El análisis se enfoca en localidades críticas, distribución espacial de los accidentes y severidad por territorio.
 """)
 
+st.markdown("""
+Esta vista será clave para responder:
+¿Cuáles son las localidades con mayor concentración de accidentes?
+¿Qué zonas requieren priorización de intervención preventiva?
+""")
+
 # =========================
 # SIDEBAR - FILTROS
 # =========================
@@ -286,20 +292,3 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
-
-# =========================
-# NOTA TÉCNICA
-# =========================
-with st.expander("Ver nota técnica de la vista geográfica"):
-    st.markdown("""
-    Esta vista utiliza variables territoriales y geográficas:
-
-    - `LOCALIDAD`: agrupación territorial para rankings y priorización.
-    - `LATITUD` y `LONGITUD`: coordenadas usadas para el mapa.
-    - `GRAVEDAD`: permite codificar visualmente la severidad del siniestro.
-    - `RIESGO_ALTO`: clasifica accidentes con heridos o muertos.
-
-    Para el mapa se excluyen registros sin coordenadas válidas. 
-    Los KPIs generales y rankings por localidad se calculan sobre todos los registros filtrados, 
-    no únicamente sobre los registros con coordenadas.
-    """)

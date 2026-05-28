@@ -317,18 +317,3 @@ fig_grav_anio.update_layout(
 
 st.plotly_chart(fig_grav_anio, use_container_width=True)
 
-# =========================
-# NOTA TÉCNICA
-# =========================
-with st.expander("Ver nota técnica de la vista temporal"):
-    st.markdown("""
-    Esta vista utiliza variables derivadas a partir de la fecha y hora del accidente:
-    
-    - `ANIO`: año del accidente.
-    - `MES`: mes del accidente.
-    - `HORA`: hora del día.
-    - `DIA_SEMANA`: día de la semana.
-
-    El mapa de calor se construye agrupando accidentes por día de la semana y hora, 
-    lo que permite detectar franjas temporales críticas.
-    """)

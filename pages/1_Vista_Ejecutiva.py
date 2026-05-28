@@ -223,13 +223,3 @@ fig_localidades.update_layout(
 
 st.plotly_chart(fig_localidades, use_container_width=True)
 
-# =========================
-# NOTA TÉCNICA
-# =========================
-with st.expander("Ver nota técnica de la vista"):
-    st.markdown("""
-    Esta vista utiliza filtros por año, localidad, gravedad y clase de accidente. 
-    Los indicadores se calculan dinámicamente sobre los datos filtrados.
-
-    La clasificación de riesgo alto considera los accidentes con heridos o muertos.
-    """)
